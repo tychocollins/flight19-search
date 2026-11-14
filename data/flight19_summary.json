@@ -1,0 +1,59 @@
+{
+  "centre_lat": 30.13,
+  "centre_lon": -76.53,
+  "area_50pct_sqnm": 6716,
+  "area_90pct_sqnm": 21197,
+  "area_note": "50% area is ~6,000-6,800 sq nm depending on grid resolution/smoothing of the Monte Carlo output; 6,400 quoted in the case file",
+  "depth_band_probability": {
+    "<600m": 0.001,
+    "plateau_600-1000m": 0.264,
+    "escarpment_1000-3000m": 0.211,
+    "basin_>3000m": 0.525
+  },
+  "search_curve_prob_find_by_day": {
+    "3": 0.082,
+    "7": 0.175,
+    "14": 0.304,
+    "21": 0.402,
+    "30": 0.502,
+    "45": 0.631,
+    "60": 0.716
+  },
+  "search_boxes": {
+    "Week 1 search cells (bounding box)": [
+      [
+        -77.633,
+        29.733
+      ],
+      [
+        -75.4,
+        29.733
+      ],
+      [
+        -75.4,
+        30.7
+      ]
+    ],
+    "Weeks 1-2 search cells (bounding box)": [
+      [
+        -77.667,
+        29.6
+      ],
+      [
+        -75.233,
+        29.6
+      ],
+      [
+        -75.233,
+        30.767
+      ]
+    ]
+  },
+  "search_assumptions": {
+    "fleet_sweep_sqnm_per_day": 330,
+    "detection_flat": 0.9,
+    "detection_escarpment": 0.6,
+    "escarpment_speed_factor": 0.6
+  },
+  "model": "ERA5 900 hPa winds; magnetic headings (IGRF 1945); held east/zigzag 50/50; five-plane fuel-out 19:05-19:20; 17:50 fix as 35x65 nm ellipse; 1945 search negative information; ETOPO1 2-min depths"
+}
