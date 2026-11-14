@@ -77,5 +77,11 @@ This takes about 2 minutes and regenerates everything in `data/` and `maps/`. In
 
 The aircraft are U.S. Navy property and protected under the Sunken Military Craft Act. Any discovery must be reported to the Naval History and Heritage Command, Underwater Archaeology Branch, and the site must not be disturbed.
 
+## License
+
+- **Code** (`code/`, `run_all.sh`): MIT, see [`LICENSE`](LICENSE).
+- **Maps, data and the case file** (`maps/`, `data/`, `docs/`): [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Reuse freely with credit.
+- **Third-party inputs** (`inputs/`) keep their own terms: ERA5 (Copernicus licence; attribution required: "Contains modified Copernicus Climate Change Service information"), ICOADS, IGRA and ETOPO1 (NOAA, public), Natural Earth (public domain).
+
 ---
 Prepared by Tycho, Vestigia Labs, November 2026.
