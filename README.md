@@ -84,4 +84,4 @@ The aircraft are U.S. Navy property and protected under the Sunken Military Craf
 - **Third-party inputs** (`inputs/`) keep their own terms: ERA5 (Copernicus licence; attribution required: "Contains modified Copernicus Climate Change Service information"), ICOADS, IGRA and ETOPO1 (NOAA, public), Natural Earth (public domain).
 
 ---
-Prepared by Tycho, Vestigia Labs, November 2026.
+Prepared by Tycho, November 2026.
