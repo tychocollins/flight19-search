@@ -3,13 +3,13 @@ import json, numpy as np, matplotlib
 matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from shapely.geometry import shape, box
 from scipy.ndimage import gaussian_filter
-land=json.load(open("data/ne_50m_land.geojson")); view=box(-83,24.3,-72.5,32.8)
+land=json.load(open("inputs/ne_50m_land.geojson")); view=box(-83,24.3,-72.5,32.8)
 fig,ax=plt.subplots(figsize=(9,7.4),dpi=170); ax.set_facecolor("#e8f0f6")
 for f in land["features"]:
     g=shape(f["geometry"]).intersection(view)
     for p in getattr(g,"geoms",[g]):
         if p.geom_type=="Polygon": x,y=p.exterior.xy; ax.fill(x,y,color="#e4dfd2",ec="#a69f8f",lw=0.6,zorder=1)
-d=np.load("search_mid_v3.npz"); lat,lon,w=d["lat"],d["lon"],d["w"]
+d=np.load("work/search_mid_v3.npz"); lat,lon,w=d["lat"],d["lon"],d["w"]
 xe=np.linspace(-83,-72.5,211); ye=np.linspace(24.3,32.8,171)
 H,_,_=np.histogram2d(lon,lat,bins=[xe,ye],weights=w); H=gaussian_filter(H.T,1.2)
 fl=np.sort(H.ravel())[::-1]; c=np.cumsum(fl)/fl.sum(); t50=fl[np.searchsorted(c,.5)]; t90=fl[np.searchsorted(c,.9)]
@@ -38,4 +38,4 @@ ax.set_xticks([]); ax.set_yticks([])
 for s in ax.spines.values(): s.set_color("#999")
 ax.set_title("Where Flight 19 most likely came down, 5 December 1945",fontsize=13,pad=10)
 fig.text(0.5,0.015,"Centre about 30.1°N, 76.5°W. Based on the 1945 Navy Board record, 1945 weather data and the 1945 search.",fontsize=8,color="#555",ha="center")
-plt.tight_layout(rect=(0,0.03,1,1)); plt.savefig("flight19_map_simple.png"); print("ok")
+plt.tight_layout(rect=(0,0.03,1,1)); plt.savefig("maps/flight19_map_simple.png"); print("ok")

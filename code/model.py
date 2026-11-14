@@ -72,7 +72,7 @@ if SCEN == "ships":
     # measured aloft wind (NAS Ft Lauderdale 1200 EST) until the evening, then ICOADS ship-obs wind field
     wdir = Nrm(243, 8); wspd = Nrm(34, 4)
     import pandas as _pd
-    _o = _pd.read_csv("icoads/near.csv")
+    _o = _pd.read_csv("inputs/icoads/icoads_1945-12-05_06_near.csv")
     _o["t"] = (_o.day - 5) * 1440 + _o.hr_utc * 60 - 300        # minutes after 00:00 EST 5 Dec
     _o = _o[(_o.t >= T(14, 0)) & (_o.t <= T(23, 0)) & _o.wdir_deg.notna() & _o.w_ms.notna()]
     _o = _o[_o.w_ms * 1.944 > 2]
@@ -95,7 +95,7 @@ if SCEN == "ships":
         return (dfrom + veer + dnoise) % 360, spd * fac
 if SCEN == "era5":
     # ERA5 (ECMWF reanalysis, Google ARCO copy) 900 hPa u/v, 1945-12-05 19Z..12-06 01Z, 1-degree grid 25-33N 82-73W (era5/era5_900.npz)
-    _E = np.load("era5/era5_900.npz")
+    _E = np.load("inputs/era5/era5_900.npz")
     from scipy.interpolate import RegularGridInterpolator as _RGI5
     _tt = (_E["hour_utc"] - 5) * 60.0; _la = _E["lat"][::-1]; _lo = _E["lon"]
     _Ui = _RGI5((_tt, _la, _lo), _E["u"][:, ::-1, :], bounds_error=False, fill_value=None)
@@ -150,7 +150,7 @@ lat = np.full(N, 26 + 3 / 60); lon = np.full(N, -(80 + 7 / 60))
 fix_lat, fix_lon = 29.25, -79.0
 lat1750 = np.full(N, np.nan); lon1750 = np.full(N, np.nan)
 track_idx = rng.choice(N, 60, replace=False)
-_bd = np.load("bahamas_dist.npz"); _bl, _bo, _BD = _bd["lats"], _bd["lons"], _bd["D"]
+_bd = np.load("inputs/bahamas_dist.npz"); _bl, _bo, _BD = _bd["lats"], _bd["lons"], _bd["D"]
 def dist_bahamas(la, lo):
     i = np.clip(np.round((la - _bl[0]) / 0.05).astype(int), 0, len(_bl) - 1)
     j = np.clip(np.round((lo - _bo[0]) / 0.05).astype(int), 0, len(_bo) - 1)
@@ -261,7 +261,7 @@ out = dict(scenario=TAG, evidence=float(w.mean()), island_med_nm=round(float(np.
 if "--radio" in sys.argv:
     out["radio_evidence"] = round(RADIO_EVID, 3); out["radio_evidence_strict"] = round(RADIO_EVID_STRICT, 3)
 print(json.dumps(out))
-np.savez_compressed(f"out_{TAG}.npz", lat=lat, lon=lon, w=W, lat1750=lat1750, lon1750=lon1750,
+np.savez_compressed(f"work/out_{TAG}.npz", lat=lat, lon=lon, w=W, lat1750=lat1750, lon1750=lon1750,
                     tas=tas, wdir=wdir, wspd=wspd, t_270=t_270, t_fuel=t_fuel)
-json.dump([traj[k] for k in range(len(track_idx))], open(f"tracks_{TAG}.json", "w"))
-json.dump([float(W[i]) for i in track_idx], open(f"trackw_{TAG}.json", "w"))
+json.dump([traj[k] for k in range(len(track_idx))], open(f"work/tracks_{TAG}.json", "w"))
+json.dump([float(W[i]) for i in track_idx], open(f"work/trackw_{TAG}.json", "w"))

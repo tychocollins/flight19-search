@@ -1,49 +1,81 @@
-# Flight 19 search package (14 November 2026)
+# Flight 19: where the Avengers most likely went down
 
-Probability map for where the five TBM Avengers of Flight 19 (5 December 1945) most likely ditched, with the inputs, code and a draft search order. Prepared by Tycho, Vestigia Labs. The full written case is in the case file (Claude Docs): https://claude.ai/artifact/FcxLtnS4DTtdjNepUXTHFK
+On 5 December 1945, five U.S. Navy TBM Avenger torpedo bombers on a training flight from Fort Lauderdale got lost, ran out of fuel and ditched in the Atlantic at night. All fourteen men were lost. The planes have never been found.
 
-## Headline
-- Probability-weighted centre: **30.13°N, 76.53°W** (about 140 nm east-northeast of the 1945 radio fix at 29°15'N 79°00'W), straddling the Blake Escarpment.
-- 50% area: about 6,400 sq nm (6,000–6,800 depending on grid smoothing). 90% area: about 20,500–21,200 sq nm.
-- Depth: 26% on the Blake Plateau (600–1,000 m), 21% on the escarpment (1,000–3,000 m), 52% in the Blake-Bahama Basin (3,000–5,000 m). Essentially none shallower than 600 m.
-- Draft search order (assumed fleet sweep 330 sq nm/day; detection 90% flat ground, 60% escarpment): ~18% chance of finding the wreck in 7 days, ~30% in 14, ~50% in 30, ~72% in 60.
+**Why it happened is well established.** This project estimates **where** it happened, from the Navy's own 1945 records, 1945 weather data and a modern reconstruction of that evening's winds.
 
-## Contents
-| Path | What it is |
+![Where Flight 19 most likely came down](maps/flight19_map_simple.png)
+
+## Result
+
+| | |
 | --- | --- |
-| `maps/flight19_map_simple.png` | Simple map for general readers: take-off, 1945 radio fix, most likely area |
-| `maps/flight19_ditch_map.png` | Detailed map: 50%/90% areas, simulated tracks, planned route, 17:50 fix, weather, depth contours |
-| `data/flight19_probability_grid.csv` | 2-arcminute cells: probability, 50%/90% flags, depth band, search rank, cumulative days and chance of success |
-| `data/flight19_zones.geojson`, `.kml` | 50%/90% polygons, week-1 and weeks-1–2 search boxes, centre point, 17:50 fix (open the KML in Google Earth) |
-| `data/flight19_summary.json` | Headline numbers and assumptions |
-| `code/model.py` | Monte Carlo flight reconstruction (200,000 flights per run) |
-| `code/fuel5.py` | Five-plane minimum-order fuel-out model |
-| `code/search1945.py` | Negative information from the 6–10 Dec 1945 search boxes (debris drift + detection odds) |
-| `code/plot.py`, `code/plot_simple.py`, `code/export_pkg.py` | Maps and export |
-| `code/icoads_parse.py` | ICOADS IMMA1 parser |
-| `inputs/era5/` | ERA5 900 hPa winds (knots), 1945-12-05 19Z to 12-06 01Z, 25–33°N, 82–73°W |
-| `inputs/igra/` | Miami and Jacksonville soundings, 4–6 Dec 1945 |
-| `inputs/icoads/` | ICOADS ship observations near the flight area, 5–6 Dec 1945 |
-| `inputs/bathy/` | ETOPO1 depth bands, 2-arcminute, 27–32°N, 81–73°W |
+| Most likely centre | **30.1°N, 76.5°W**, off northeast Florida |
+| Distance from the 1945 radio fix most accounts use | about 140 nautical miles east-northeast |
+| Area with a 50% chance of containing the planes | about 6,400 sq nm (roughly 80 × 80 nm) |
+| Area with a 90% chance | about 21,000 sq nm |
+| Seabed depth | 26% on the Blake Plateau (600–1,000 m), 21% on the Blake Escarpment (1,000–3,000 m), 52% in the Blake-Bahama Basin (3,000–5,000 m) |
+| Chance of finding them with a modern AUV survey* | ~18% in 7 days, ~30% in 14, ~50% in 30, ~72% in 60 |
 
-The Navy Board record itself (NARA microfilm M1657, 549 pages) is not included: https://catalog.archives.gov/id/146850136
+\*Assumes a fleet sweep of 330 sq nm/day (the pace of the MH370 search) and 90% detection on flat ground, 60% on the escarpment. Replace with a survey operator's real figures.
 
-## Reproducing the final result
-Python 3 with numpy, scipy, pandas, matplotlib, shapely, ppigrf. Model runs need `data/ne_50m_land.geojson` (Natural Earth) in the working directory (not included) and `inputs/bahamas_dist.npz`.
+**This is a probability map, not a location.** Only a seabed survey can confirm it.
+
+## How it works, in brief
+
+1. The flight is re-flown 200,000 times on a computer, each time with slightly different speeds, headings, turn times and winds.
+2. Each simulated flight is scored against what was recorded in 1945: the 17:50 radio direction-finding fix, landmarks the flight leader reported, the radio signal fading, the fuel calls and the time of the last transmission.
+3. Winds come from ERA5 (ECMWF's reconstruction of past weather), checked against the Miami weather-balloon sounding from that afternoon.
+4. Areas searched without result on 6–10 December 1945 count as weak evidence the planes are not there.
+5. The surviving flights' ditch points, weighted by how well they match the record, form the map.
+
+The full written case, with sources, timeline, findings, limits and a glossary, is in [`docs/Flight19_Case_File.docx`](docs/Flight19_Case_File.docx).
+
+## What's in this repo
+
+| Folder | Contents |
+| --- | --- |
+| `maps/` | Simple map (above) and a detailed technical map with simulated tracks, weather and depth contours |
+| `data/` | `flight19_zones.kml` (open in Google Earth), `flight19_zones.geojson`, `flight19_probability_grid.csv` (every 2 nm cell: probability, depth band, search order), `flight19_summary.json` |
+| `docs/` | Full case file (Word) |
+| `code/` | Simulation (`model.py`), fuel model (`fuel5.py`), 1945 search update (`search1945.py`), combine step, map and export scripts |
+| `inputs/` | ERA5 winds, 1945 Miami/Jacksonville soundings, 1945 ship weather reports (ICOADS), seabed depths (ETOPO1), coastlines (Natural Earth) |
+
+## Reproduce it
+
+Python 3.9+. From the repo root:
+
+```bash
+pip install -r requirements.txt
+./run_all.sh
 ```
-MAGVAR=1 TAGX=_m python3 model.py era5 1 --island --record --baxter --radio --fuelearly
-MAGVAR=1 TAGX=_m python3 model.py era5 1 --island --record --baxter --radio --fuelearly --zigzag
-# combine 50/50 with fuel-out <= 19:20, apply 17:50 ellipse -> final_v3_prior.npz (see case file, Method)
-MODE=v3 python3 search1945.py mid
-python3 export_pkg.py && python3 plot.py
-```
 
-## Evidence tiers
-1. Primary records: NARA M1657 radio logs, findings, Coast Guard search plans; ICOADS 1945 ship reports; NAS Fort Lauderdale winds aloft; IGRA soundings; Weather Bureau maps.
-2. Physics reconstructions: ERA5 reanalysis (ECMWF, via Google's public ARCO-ERA5 store); IGRF 1945 magnetic variation.
-3. Bounded assumptions: ERA5 error ±15% speed / ±12°; fuel 320–340 gal per aircraft; burn ranges; radio-fix ellipse 35 × 65 nm; debris detection odds; survey sweep rate.
-4. Neutral: 50/50 held east vs zigzag after 18:06.
-Excluded as unverified: "tanks checked full"; Cuban interference quoted from the Port Everglades log; 2016 blog report on the Solomons deck log.
+This takes about 2 minutes and regenerates everything in `data/` and `maps/`. Intermediate files go to `work/` (ignored by git). The fuel model can be run on its own with `python3 code/fuel5.py`.
+
+## Sources
+
+**Primary records**
+- Navy Board of Investigation, *The Disappearance of Flight 19* (NARA microfilm M1657, NAID [146850136](https://catalog.archives.gov/id/146850136)): radio logs, findings, Coast Guard search plans. Not included; 549 pages.
+- ICOADS Release 3.1 ship weather reports, December 1945 (NOAA NCEI).
+- NOAA IGRA v2 weather-balloon soundings, Miami (USM00072202) and Jacksonville (USM00072206), 4–6 December 1945.
+- NAS Fort Lauderdale winds aloft and U.S. Weather Bureau daily maps, 5–6 December 1945.
+
+**Reconstructions and reference data**
+- ERA5 reanalysis (ECMWF), via Google's public ARCO-ERA5 store: 900 hPa winds, 14:00–20:00 EST.
+- IGRF geomagnetic model (1945 magnetic variation), ETOPO1 global relief (NOAA), Natural Earth coastlines.
+
+**Left out as unverified:** a claim that the tanks were "checked full" (not in the Board's findings), Cuban radio interference attributed to the Port Everglades log (not found in the record), and a 2016 blog report on the USS Solomons deck log.
 
 ## Limits
-A probability map, not a location. Not peer-reviewed. The spread is set by unrecorded crew behaviour after 18:07 and five hours of dead reckoning; only a new 1945 measurement (a radar plot or raw direction-finding bearings) could shrink it substantially. Any find must be reported to the Naval History and Heritage Command (Sunken Military Craft Act).
+
+- Not peer-reviewed.
+- The spread comes mainly from what nobody recorded: what the crew did after 18:07, and five hours of navigation by compass and dead reckoning.
+- The area can only shrink much further with a new 1945 measurement, such as a radar plot or raw direction-finding bearings, which may exist in unfilmed Navy and Coast Guard dispatch files at the National Archives.
+- Results depend on stated assumptions (wind error, fuel capacity, radio-fix error shape, survey rates), listed in the case file's technical notes.
+
+## If you find something
+
+The aircraft are U.S. Navy property and protected under the Sunken Military Craft Act. Any discovery must be reported to the Naval History and Heritage Command, Underwater Archaeology Branch, and the site must not be disturbed.
+
+---
+Prepared by Tycho, Vestigia Labs, November 2026.

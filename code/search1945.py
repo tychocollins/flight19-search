@@ -50,7 +50,7 @@ if os.environ.get("MODE")=="final":
 L = [np.load(f) for f, _ in F] if os.environ.get("MODE")!="v3" else []
 CUT = 1160 if os.environ.get("MODE")=="final" else 1e9
 if os.environ.get("MODE")=="v3":
-    _v=np.load("final_v3_prior.npz"); lat=_v["lat"]; lon=_v["lon"]
+    _v=np.load("work/final_v3_prior.npz"); lat=_v["lat"]; lon=_v["lon"]
 else:
     lat = np.concatenate([x["lat"] for x in L]); lon = np.concatenate([x["lon"] for x in L])
 if os.environ.get("MODE")=="v3":
@@ -89,7 +89,7 @@ for k, (pm, pod) in sorted(hit.items(), key=lambda x: -x[1][0] * x[1][1])[:8]:
     print(f"  {k:60s} prior-in-box {pm:.3f}  POD {pod:.2f}")
 
 # land mask for areas, HPD stats
-land = unary_union([shape(f["geometry"]) for f in json.load(open("data/ne_50m_land.geojson"))["features"]]).intersection(sbox(-84, 24, -69, 34))
+land = unary_union([shape(f["geometry"]) for f in json.load(open("inputs/ne_50m_land.geojson"))["features"]]).intersection(sbox(-84, 24, -69, 34))
 def hpd(w):
     xe = np.linspace(-84, -69, 301); ye = np.linspace(24.5, 33, 171)
     H, _, _ = np.histogram2d(lon, lat, bins=[xe, ye], weights=w); H = H.T
@@ -102,4 +102,4 @@ def hpd(w):
 for tag, w in [("before", W), ("after", W2)]:
     a50, a90, b, *_ = hpd(w)
     print(f"  {tag:6s}: centre {np.average(lat,weights=w):.2f}N {np.average(lon,weights=w):.2f}W | 50% {a50:,.0f} sq nm | 90% {a90:,.0f} | best 1,000 sq nm holds {b:.1%} | west of 76.8W {w[lon<-76.8].sum():.1%}")
-np.savez(f"search_{SCEN}{'_'+os.environ.get('MODE','') if os.environ.get('MODE') else ''}.npz", lat=lat, lon=lon, w=W2, w0=W)
+np.savez(f"work/search_{SCEN}{'_'+os.environ.get('MODE','') if os.environ.get('MODE') else ''}.npz", lat=lat, lon=lon, w=W2, w0=W)
